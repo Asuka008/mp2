@@ -1,0 +1,32 @@
+.artwork-detail { margin-top: var(--space-4); }
+.detail-back { display: inline-flex; align-items: center; min-height: 44px; margin-bottom: var(--space-4); font-size: 0.8rem; text-decoration: none; }
+.detail-back:hover { text-decoration: underline; }
+.detail-layout { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: var(--space-5); align-items: start; }
+.detail-image-frame { aspect-ratio: auto; min-height: 480px; padding: var(--space-3); }
+.detail-image-frame img { height: auto; max-height: 850px; object-fit: contain; }
+.detail-information { padding-top: var(--space-2); border-top: 2px solid var(--color-accent); }
+.detail-information h1 { font-size: clamp(2rem, 3.4vw, 3.25rem); margin-top: var(--space-3); }
+.detail-artist { font-size: 1.1rem; margin: var(--space-3) 0 var(--space-1); white-space: pre-line; }
+.detail-artist-display { color: var(--color-muted); font-size: 0.8rem; line-height: 1.7; white-space: pre-line; }
+.detail-metadata { margin: var(--space-4) 0 0; }
+.detail-metadata > div { display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: var(--space-2); border-top: 1px solid var(--color-line); padding: var(--space-2) 0; }
+.detail-metadata dt { margin: 0; }
+.detail-metadata dd { white-space: pre-line; font-size: 0.85rem; }
+.detail-navigation { display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); margin-top: var(--space-5); border-top: 1px solid var(--color-ink); padding-top: var(--space-3); }
+.detail-navigation button { background: transparent; color: var(--color-accent); border-color: var(--color-line); min-width: 120px; }
+.detail-navigation button:hover:not(:disabled) { background: var(--color-accent); color: var(--color-paper); border-color: var(--color-accent); }
+.detail-navigation button:disabled { color: var(--color-muted); background: var(--color-surface); }
+.detail-navigation p { margin: 0; font-size: 0.8rem; text-align: center; }
+.detail-navigation-note { font-size: 0.78rem; color: var(--color-muted); }
+
+@media (max-width: 900px) {
+  .detail-layout { grid-template-columns: minmax(0, 1fr); gap: var(--space-4); }
+  .detail-image-frame { min-height: 360px; }
+  .detail-information { max-width: 700px; }
+}
+@media (max-width: 600px) {
+  .detail-image-frame { min-height: 240px; padding: 12px; }
+  .detail-metadata > div { grid-template-columns: 90px minmax(0, 1fr); }
+  .detail-navigation { gap: var(--space-1); }
+  .detail-navigation button { min-width: 0; padding: 10px 12px; }
+}
