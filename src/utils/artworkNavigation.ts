@@ -1,6 +1,7 @@
 export interface ArtworkNavigation {
   ids: number[];
   source: 'list' | 'gallery' | 'default';
+  returnTo?: string;
 }
 
 export function parseArtworkId(value: string | undefined): number | null {
@@ -19,14 +20,18 @@ export function readArtworkNavigation(state: unknown, id: number): ArtworkNaviga
     || !ids.every((item) => typeof item === 'number' && Number.isSafeInteger(item) && item > 0)
     || new Set(ids).size !== ids.length || !ids.includes(id)
     || (source !== 'list' && source !== 'gallery' && source !== 'default')) return null;
-  return { ids, source };
+  const returnTo = 'returnTo' in context && typeof context.returnTo === 'string'
+    && (context.returnTo === '/' || context.returnTo.startsWith('/?')
+      || context.returnTo === '/gallery' || context.returnTo.startsWith('/gallery?'))
+    ? context.returnTo : undefined;
+  return { ids, source, ...(returnTo ? { returnTo } : {}) };
 }
 
 export function getArtworkNeighbors(ids: number[], id: number) {
   const index = ids.indexOf(id);
   return {
     index,
-    previous: index > 0 ? ids[index - 1] : null,
-    next: index >= 0 && index < ids.length - 1 ? ids[index + 1] : null,
+    previous: index >= 0 && ids.length > 1 ? ids[(index - 1 + ids.length) % ids.length] : null,
+    next: index >= 0 && ids.length > 1 ? ids[(index + 1) % ids.length] : null,
   };
 }

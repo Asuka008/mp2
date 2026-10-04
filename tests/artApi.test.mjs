@@ -73,6 +73,7 @@ test('text search and public-domain filtering are combined in one query', async 
   const params = JSON.parse(requests[0].params.params);
   assert.deepEqual(params.query.bool.filter, [{ term: { is_public_domain: true } }]);
   assert.equal(params.query.bool.must[0].multi_match.query, 'Monet');
+  assert.equal(params.query.bool.must[0].multi_match.type, 'bool_prefix');
   assert.deepEqual(params.query.bool.must[0].multi_match.fields, ['title^3', 'artist_title^2', 'artist_display']);
 });
 

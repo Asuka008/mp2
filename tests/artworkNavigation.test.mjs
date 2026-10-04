@@ -11,8 +11,8 @@ test('route IDs reject invalid numbers without partially parsing strings', () =>
 
 test('neighbors follow collection order rather than numeric ID order', () => {
   assert.deepEqual(getArtworkNeighbors([500, 8, 200], 8), { index: 1, previous: 500, next: 200 });
-  assert.deepEqual(getArtworkNeighbors([500, 8, 200], 500), { index: 0, previous: null, next: 8 });
-  assert.deepEqual(getArtworkNeighbors([500, 8, 200], 200), { index: 2, previous: 8, next: null });
+  assert.deepEqual(getArtworkNeighbors([500, 8, 200], 500), { index: 0, previous: 200, next: 8 });
+  assert.deepEqual(getArtworkNeighbors([500, 8, 200], 200), { index: 2, previous: 8, next: 500 });
   assert.deepEqual(getArtworkNeighbors([8], 8), { index: 0, previous: null, next: null });
   assert.deepEqual(getArtworkNeighbors([8], 99), { index: -1, previous: null, next: null });
 });
@@ -25,4 +25,10 @@ test('navigation state accepts snapshots and rejects malformed or unrelated coll
     { artworkNavigation: { ids: [8], source: 'invalid' } }, { artworkNavigation }]) {
     assert.equal(readArtworkNavigation(state, 99), null);
   }
+});
+
+test('return links preserve view controls and reject external destinations', () => {
+  const context = { ids: [8], source: 'gallery', returnTo: '/gallery?type=Painting&era=1800-1899' };
+  assert.deepEqual(readArtworkNavigation({ artworkNavigation: context }, 8), context);
+  assert.equal(readArtworkNavigation({ artworkNavigation: { ...context, returnTo: 'https://example.org' } }, 8).returnTo, undefined);
 });

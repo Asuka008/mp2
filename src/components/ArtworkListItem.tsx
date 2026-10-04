@@ -3,8 +3,8 @@ import type { Artwork } from '../types/artwork';
 import type { ArtworkNavigation } from '../utils/artworkNavigation';
 
 export default function ArtworkListItem({ artwork, navigation }: { artwork: Artwork; navigation: ArtworkNavigation }) {
-  const year = artwork.date_start;
-  const date = artwork.date_display ?? (year === null ? 'Date unknown' : year < 0 ? `${Math.abs(year)} BCE` : String(year));
+  const year = artwork.date_start ?? artwork.date_end;
+  const date = artwork.date_display || (year === null ? 'Date unknown' : year < 0 ? `${Math.abs(year)} BCE` : String(year));
   return (
     <li>
       <Link className="artwork-link" to={`/artwork/${artwork.id}`} state={{ artworkNavigation: navigation }}>

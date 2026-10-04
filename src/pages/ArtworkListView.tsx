@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router';
 import { fetchArtworks, searchArtworks } from '../api/artApi';
 import ArtworkListItem from '../components/ArtworkListItem';
 import type { Artwork } from '../types/artwork';
@@ -11,9 +12,17 @@ type ResultsState =
   | { status: 'success'; artworks: Artwork[]; total: number };
 
 export default function ArtworkListView() {
-  const [query, setQuery] = useState('');
-  const [sortField, setSortField] = useState<ArtworkSortField>('title');
-  const [direction, setDirection] = useState<SortDirection>('asc');
+  const [params, setParams] = useSearchParams();
+  const query = params.get('q') ?? '';
+  const sortField: ArtworkSortField = params.get('sort') === 'year' ? 'year' : 'title';
+  const direction: SortDirection = params.get('order') === 'desc' ? 'desc' : 'asc';
+  function updateControl(name: string, value: string) {
+    setParams((previous) => {
+      const next = new URLSearchParams(previous);
+      if (value) next.set(name, value); else next.delete(name);
+      return next;
+    }, { replace: true });
+  }
   const [results, setResults] = useState<ResultsState>({ status: 'loading' });
   const [retryAttempt, setRetryAttempt] = useState(0);
   const searchQuery = query.trim();
@@ -47,7 +56,8 @@ export default function ArtworkListView() {
   const sortedArtworks = results.status === 'success'
     ? sortArtworks(results.artworks, sortField, direction)
     : [];
-  const navigation = { ids: sortedArtworks.map((artwork) => artwork.id), source: 'list' as const };
+  const navigation = { ids: sortedArtworks.map((artwork) => artwork.id), source: 'list' as const,
+    returnTo: `/${params.size ? `?${params}` : ''}` };
 
   return (
     <section aria-labelledby="list-title">
@@ -60,12 +70,12 @@ export default function ArtworkListView() {
         <div className="search-control">
           <label htmlFor="artwork-search">Search artworks or artists</label>
           <input id="artwork-search" type="search" placeholder="Search artworks or artists..."
-            value={query} onChange={(event) => setQuery(event.target.value)} />
+            value={query} onChange={(event) => updateControl('q', event.target.value)} />
         </div>
         <div>
           <label htmlFor="sort-field">Sort by</label>
           <select id="sort-field" value={sortField}
-            onChange={(event) => setSortField(event.target.value as ArtworkSortField)}>
+            onChange={(event) => updateControl('sort', event.target.value)}>
             <option value="title">Title</option>
             <option value="year">Year</option>
           </select>
@@ -73,7 +83,7 @@ export default function ArtworkListView() {
         <div>
           <label htmlFor="sort-direction">Order</label>
           <select id="sort-direction" value={direction}
-            onChange={(event) => setDirection(event.target.value as SortDirection)}>
+            onChange={(event) => updateControl('order', event.target.value)}>
             <option value="asc">Ascending</option>
             <option value="desc">Descending</option>
           </select>

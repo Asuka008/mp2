@@ -12,8 +12,8 @@ export function sortArtworks(
   direction: SortDirection,
 ): Artwork[] {
   return [...artworks].sort((a, b) => {
-    const left = field === 'year' ? a.date_start : a.title?.trim() || null;
-    const right = field === 'year' ? b.date_start : b.title?.trim() || null;
+    const left = field === 'year' ? a.date_start ?? a.date_end ?? null : a.title?.trim() || null;
+    const right = field === 'year' ? b.date_start ?? b.date_end ?? null : b.title?.trim() || null;
     if (left === null && right === null) return a.id - b.id;
     if (left === null) return 1;
     if (right === null) return -1;

@@ -120,6 +120,8 @@ export async function searchArtworks(
   const textQuery = {
     multi_match: {
       query: text,
+      // Match an unfinished final word while the user is still typing.
+      type: 'bool_prefix',
       fields: ['title^3', 'artist_title^2', 'artist_display'],
       operator: 'and',
     },

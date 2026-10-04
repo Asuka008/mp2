@@ -88,7 +88,7 @@ export default function ArtworkDetailView() {
     ['Classification', artwork.classification_title],
   ].filter(([, value]) => value?.trim());
   const neighbors = getArtworkNeighbors(context?.ids ?? [], id);
-  const backPath = context?.source === 'gallery' ? '/gallery' : '/';
+  const backPath = context?.returnTo ?? (context?.source === 'gallery' ? '/gallery' : '/');
 
   function goToArtwork(neighborId: number | null) {
     if (neighborId === null || !context) return;

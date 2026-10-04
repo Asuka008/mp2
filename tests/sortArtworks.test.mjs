@@ -28,3 +28,11 @@ test('sorting never changes the API result array', () => {
   assert.deepEqual(ids(artworks), originalOrder);
   assert.deepEqual(sortArtworks([], 'year', 'desc'), []);
 });
+
+test('year sorting falls back to the end year consistently with gallery and details', () => {
+  const items = [{ id: 1, title: 'A', date_start: null, date_end: 1850 },
+    { id: 2, title: 'B', date_start: 1800, date_end: 1900 },
+    { id: 3, title: 'C', date_start: null, date_end: null }];
+  assert.deepEqual(ids(sortArtworks(items, 'year', 'asc')), [2, 1, 3]);
+  assert.deepEqual(ids(sortArtworks(items, 'year', 'desc')), [1, 2, 3]);
+});

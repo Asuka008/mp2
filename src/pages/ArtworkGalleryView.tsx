@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router';
 import { fetchArtworks } from '../api/artApi';
 import type { ArtworkCollectionResponse } from '../api/artApi';
 import ArtworkGalleryCard from '../components/ArtworkGalleryCard';
@@ -13,8 +14,18 @@ type GalleryState =
 
 export default function ArtworkGalleryView() {
   const [gallery, setGallery] = useState<GalleryState>({ status: 'loading' });
-  const [artworkType, setArtworkType] = useState<string | null>(null);
-  const [era, setEra] = useState<HistoricalEra>('all');
+  const [params, setParams] = useSearchParams();
+  const artworkType = params.get('type') || null;
+  const requestedEra = params.get('era');
+  const eras: HistoricalEra[] = ['all', 'before-1800', '1800-1899', '1900-1949', '1950-present', 'unknown'];
+  const era = eras.find((value) => value === requestedEra) ?? 'all';
+  function updateFilter(name: string, value: string) {
+    setParams((previous) => {
+      const next = new URLSearchParams(previous);
+      if (value) next.set(name, value); else next.delete(name);
+      return next;
+    }, { replace: true });
+  }
   const [retryAttempt, setRetryAttempt] = useState(0);
 
   useEffect(() => {
@@ -38,7 +49,8 @@ export default function ArtworkGalleryView() {
   const artworks = gallery.status === 'success' ? gallery.response.data : [];
   const types = [...new Set(artworks.map(getArtworkType))].sort((a, b) => a.localeCompare(b));
   const filteredArtworks = filterArtworks(artworks, artworkType, era);
-  const navigation = { ids: filteredArtworks.map((artwork) => artwork.id), source: 'gallery' as const };
+  const navigation = { ids: filteredArtworks.map((artwork) => artwork.id), source: 'gallery' as const,
+    returnTo: `/gallery${params.size ? `?${params}` : ''}` };
 
   return (
     <section aria-labelledby="gallery-title">
@@ -52,7 +64,7 @@ export default function ArtworkGalleryView() {
           <label htmlFor="gallery-type">Artwork type / classification</label>
           <select id="gallery-type" value={artworkType ?? ''}
             disabled={gallery.status !== 'success'}
-            onChange={(event) => setArtworkType(event.target.value || null)}>
+            onChange={(event) => updateFilter('type', event.target.value)}>
             <option value="">All types</option>
             {types.map((type) => <option key={type} value={type}>{type}</option>)}
           </select>
@@ -60,7 +72,7 @@ export default function ArtworkGalleryView() {
         <div>
           <label htmlFor="gallery-era">Historical era</label>
           <select id="gallery-era" value={era} disabled={gallery.status !== 'success'}
-            onChange={(event) => setEra(event.target.value as HistoricalEra)}>
+            onChange={(event) => updateFilter('era', event.target.value)}>
             <option value="all">All eras</option>
             <option value="before-1800">Before 1800</option>
             <option value="1800-1899">1800–1899</option>
