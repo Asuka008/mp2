@@ -9,7 +9,7 @@ import type { ArtworkSortField, SortDirection } from '../utils/sortArtworks';
 type ResultsState =
   | { status: 'loading' }
   | { status: 'error'; message: string }
-  | { status: 'success'; artworks: Artwork[]; total: number };
+  | { status: 'success'; artworks: Artwork[]; total: number; iiifUrl: string };
 
 export default function ArtworkListView() {
   const [params, setParams] = useSearchParams();
@@ -37,7 +37,8 @@ export default function ArtworkListView() {
           ? await searchArtworks(searchQuery, options)
           : await fetchArtworks(options);
         if (!controller.signal.aborted) {
-          setResults({ status: 'success', artworks: response.data, total: response.pagination.total });
+          setResults({ status: 'success', artworks: response.data, total: response.pagination.total,
+            iiifUrl: response.config.iiif_url });
         }
       } catch {
         // Cancellation is expected when the query changes or the page unmounts.
@@ -111,7 +112,7 @@ export default function ArtworkListView() {
             ) : (
               <ul className="artwork-list">
                 {sortedArtworks.map((artwork) => <ArtworkListItem key={artwork.id} artwork={artwork}
-                  navigation={navigation} />)}
+                  navigation={navigation} iiifUrl={results.iiifUrl} />)}
               </ul>
             )}
           </>

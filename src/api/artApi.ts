@@ -174,7 +174,8 @@ export async function fetchArtworkById(
 export function getArtworkImageUrl(
   imageId: Artwork['image_id'],
   iiifUrl: ApiConfig['iiif_url'],
+  width = 843,
 ): string | null {
   if (!imageId) return null;
-  return `${iiifUrl.replace(/\/+$/, '')}/${encodeURIComponent(imageId)}/full/843,/0/default.jpg`;
+  return `${iiifUrl.replace(/\/+$/, '')}/${encodeURIComponent(imageId)}/full/${width},/0/default.jpg`;
 }
